@@ -18,8 +18,8 @@ env/
 htmlcov/
 coverage.xml
 
-# Models (auto-generated, large binary)
-models/
+# Models (auto-generated ML model weights, large binary files)
+/models/
 *.joblib
 
 # IDE
