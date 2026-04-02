@@ -19,7 +19,7 @@ from typing import Any, Dict, Optional, Set
 
 import structlog
 from web3 import AsyncWeb3
-from web3.providers import WebSocketProvider
+from web3.providers import WebsocketProvider
 
 from app.config import get_settings
 from app.core.ai.classifier import VulnerabilityClassifier
@@ -88,7 +88,7 @@ async def _run_listener() -> None:
 
     while True:
         try:
-            async with AsyncWeb3(WebSocketProvider(settings.eth_ws_url)) as w3:
+            async with AsyncWeb3(WebsocketProvider(settings.eth_ws_url)) as w3:
                 log.info("mempool_ws_connected", url=settings.eth_ws_url)
 
                 # web3.py 6.x: subscribe() returns an async iterator directly

@@ -34,10 +34,24 @@ class Settings(BaseSettings):
     celery_broker_url: str = Field("redis://localhost:6379/0", alias="CELERY_BROKER_URL")
     celery_result_backend: str = Field("redis://localhost:6379/1", alias="CELERY_RESULT_BACKEND")
 
-    # --- Blockchain ---
+    # --- Blockchain: Ethereum ---
     eth_rpc_url: str = Field("https://mainnet.infura.io/v3/demo", alias="ETH_RPC_URL")
     eth_testnet_rpc_url: Optional[str] = Field(None, alias="ETH_TESTNET_RPC_URL")
     etherscan_api_key: Optional[str] = Field(None, alias="ETHERSCAN_API_KEY")
+
+    # --- Blockchain: BNB Smart Chain ---
+    bsc_rpc_url: str = Field("https://bsc-dataseed.binance.org/", alias="BSC_RPC_URL")
+    bscscan_api_key: Optional[str] = Field(None, alias="BSCSCAN_API_KEY")
+
+    # --- Blockchain: Polygon ---
+    polygon_rpc_url: str = Field("https://polygon-rpc.com/", alias="POLYGON_RPC_URL")
+    polygonscan_api_key: Optional[str] = Field(None, alias="POLYGONSCAN_API_KEY")
+
+    # --- Blockchain: Arbitrum ---
+    arbitrum_rpc_url: str = Field(
+        "https://arb1.arbitrum.io/rpc", alias="ARBITRUM_RPC_URL"
+    )
+    arbiscan_api_key: Optional[str] = Field(None, alias="ARBISCAN_API_KEY")
 
     # --- Static analysis ---
     slither_timeout: int = Field(120, alias="SLITHER_TIMEOUT")
@@ -45,6 +59,11 @@ class Settings(BaseSettings):
 
     # --- AI ---
     ai_model_path: str = Field("models/vuln_classifier.joblib", alias="AI_MODEL_PATH")
+
+    # --- LLM explanations ---
+    openai_api_key: Optional[str] = Field(None, alias="OPENAI_API_KEY")
+    openai_model: str = Field("gpt-4o-mini", alias="OPENAI_MODEL")
+    llm_explanation_enabled: bool = Field(False, alias="LLM_EXPLANATION_ENABLED")
 
     # --- Real-time / WebSocket ---
     eth_ws_url: Optional[str] = Field(None, alias="ETH_WS_URL")
