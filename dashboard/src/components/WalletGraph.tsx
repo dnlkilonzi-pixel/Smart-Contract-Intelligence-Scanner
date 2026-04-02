@@ -101,8 +101,8 @@ export default function WalletGraph({ address }: Props) {
     // Zoom container
     const g = svg.append("g");
     svg.call(
-      d3.zoom<SVGSVGElement, unknown>().on("zoom", (event) =>
-        g.attr("transform", event.transform)
+      d3.zoom<SVGSVGElement, unknown>().on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) =>
+        g.attr("transform", event.transform.toString())
       )
     );
 

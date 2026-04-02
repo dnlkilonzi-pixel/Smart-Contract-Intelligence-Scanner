@@ -10,6 +10,8 @@ const WS_URL =
     ? process.env.NEXT_PUBLIC_WS_URL
     : undefined) ?? "ws://localhost:8000";
 
+const RECONNECT_DELAY_MS = 5000;
+
 const LEVEL_COLOR: Record<string, string> = {
   critical: "border-l-purple-500 bg-purple-500/5",
   high: "border-l-red-500 bg-red-500/5",
@@ -42,8 +44,8 @@ export default function LiveThreatFeed() {
       ws.onopen = () => setConnected(true);
       ws.onclose = () => {
         setConnected(false);
-        // Reconnect after 5 s
-        reconnectTimer = setTimeout(connect, 5000);
+        // Reconnect after RECONNECT_DELAY_MS
+        reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS);
       };
       ws.onerror = () => ws.close();
 

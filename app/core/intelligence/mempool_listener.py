@@ -91,7 +91,9 @@ async def _run_listener() -> None:
             async with AsyncWeb3(WebSocketProvider(settings.eth_ws_url)) as w3:
                 log.info("mempool_ws_connected", url=settings.eth_ws_url)
 
-                async for block_data in await w3.eth.subscribe("newHeads"):
+                # web3.py 6.x: subscribe() returns an async iterator directly
+                subscription = await w3.eth.subscribe("newHeads")
+                async for block_data in subscription:
                     block_number = block_data.get("number")
                     if block_number is None:
                         continue
