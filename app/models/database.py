@@ -27,13 +27,14 @@ settings = get_settings()
 # Engine — created once, shared across the process
 # ---------------------------------------------------------------------------
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.app_debug,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
+# SQLite (used in tests) runs with NullPool and does not accept pool_size /
+# max_overflow.  Only pass those kwargs for non-SQLite databases.
+_engine_kwargs: dict = {"echo": settings.app_debug, "pool_pre_ping": True}
+if not settings.database_url.startswith("sqlite"):
+    _engine_kwargs["pool_size"] = 10
+    _engine_kwargs["max_overflow"] = 20
+
+engine = create_async_engine(settings.database_url, **_engine_kwargs)
 
 # ---------------------------------------------------------------------------
 # Session factory
