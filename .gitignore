@@ -35,5 +35,8 @@ Thumbs.db
 *.log
 logs/
 
-# Docker
-docker/postgres_data/
+# Dashboard (Next.js)
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+dashboard/.env.local

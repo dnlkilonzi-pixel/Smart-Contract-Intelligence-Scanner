@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # --- AI ---
     ai_model_path: str = Field("models/vuln_classifier.joblib", alias="AI_MODEL_PATH")
 
+    # --- Real-time / WebSocket ---
+    eth_ws_url: Optional[str] = Field(None, alias="ETH_WS_URL")
+    mempool_auto_scan: bool = Field(False, alias="MEMPOOL_AUTO_SCAN")
+
 
 @lru_cache
 def get_settings() -> Settings:

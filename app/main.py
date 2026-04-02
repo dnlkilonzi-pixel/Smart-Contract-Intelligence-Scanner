@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.v1 import router as v1_router
 from app.config import get_settings
+from app.core.intelligence.mempool_listener import start_listener, stop_listener
 from app.models.database import init_db
 from app.utils.logging import configure_logging
 
@@ -23,7 +24,9 @@ log = structlog.get_logger(__name__)
 async def lifespan(app: FastAPI):
     log.info("starting_up", env=settings.app_env)
     await init_db()
+    await start_listener()
     yield
+    await stop_listener()
     log.info("shutting_down")
 
 
