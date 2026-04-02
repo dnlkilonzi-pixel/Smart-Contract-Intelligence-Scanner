@@ -12,7 +12,7 @@ psycopg2-binary==2.9.9
 
 # Async HTTP
 httpx==0.27.0
-aiohttp==3.9.5
+aiohttp==3.13.3
 
 # Blockchain
 web3==6.19.0
@@ -32,13 +32,13 @@ celery==5.4.0
 
 # Utilities
 python-dotenv==1.0.1
-python-multipart==0.0.9
+python-multipart==0.0.22
 tenacity==8.3.0
 structlog==24.1.0
 
 # Report generation
 jinja2==3.1.4
-weasyprint==62.3
+weasyprint==68.0
 
 # Testing
 pytest==8.2.0
