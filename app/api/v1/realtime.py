@@ -1,13 +1,22 @@
 """
-/api/v1/realtime — WebSocket endpoint for live threat alerts.
+/api/v1/realtime — WebSocket endpoint for live threat alerts and scan progress.
 
-Clients connect via WebSocket and receive a stream of threat alert JSON
-messages whenever the mempool listener detects a new high-risk contract.
+Endpoints
+---------
+- ``/realtime/threats``         : live mempool threat feed (existing)
+- ``/realtime/scan/{task_id}``  : real-time progress stream for a Celery scan task
 
-Protocol:
-  - Server sends: JSON threat alert objects (see mempool_listener._build_alert)
+Protocol (threats)
+------------------
+  - Server sends: JSON threat alert objects
   - Server sends: {"type": "ping"} heartbeat every 30 s
-  - Client may send: any text (ignored; kept alive)
+
+Protocol (scan progress)
+------------------------
+  - Server sends: {"type": "progress", "task_id": "…", "state": "…", "progress": N, "step": "…"}
+  - Server sends: {"type": "result",   "task_id": "…", "result": {…}} on completion
+  - Server sends: {"type": "error",    "task_id": "…", "error": "…"} on failure
+  - Server sends: {"type": "ping"} heartbeat every 30 s
 """
 from __future__ import annotations
 
@@ -115,3 +124,81 @@ async def _heartbeat(websocket: WebSocket) -> None:
             await websocket.send_text(json.dumps({"type": "ping"}))
     except Exception:
         pass
+
+
+# ---------------------------------------------------------------------------
+# Scan progress streaming
+# ---------------------------------------------------------------------------
+
+# Poll interval (seconds) when streaming Celery task progress
+_POLL_INTERVAL_S = 1.0
+
+
+@router.websocket("/scan/{task_id}")
+async def scan_progress_ws(websocket: WebSocket, task_id: str) -> None:
+    """
+    WebSocket endpoint — streams real-time progress for a background scan task.
+
+    Connect with: ws://host:8000/api/v1/realtime/scan/{task_id}
+
+    The server polls the Celery result backend every second and pushes state
+    updates until the task completes or fails.
+    """
+    await websocket.accept()
+    log.info("scan_ws_client_connected", task_id=task_id)
+
+    heartbeat_task = asyncio.create_task(_heartbeat(websocket))
+
+    try:
+        from celery.result import AsyncResult
+
+        from app.worker import celery_app
+
+        while True:
+            try:
+                result: AsyncResult = celery_app.AsyncResult(task_id)
+                state = result.state
+                meta = result.info or {}
+
+                if state == "SUCCESS":
+                    payload = {
+                        "type": "result",
+                        "task_id": task_id,
+                        "state": state,
+                        "result": meta if isinstance(meta, dict) else {},
+                    }
+                    await websocket.send_text(json.dumps(payload))
+                    break
+
+                if state in ("FAILURE", "REVOKED"):
+                    payload = {
+                        "type": "error",
+                        "task_id": task_id,
+                        "state": state,
+                        "error": str(meta),
+                    }
+                    await websocket.send_text(json.dumps(payload))
+                    break
+
+                progress_meta = meta if isinstance(meta, dict) else {}
+                payload = {
+                    "type": "progress",
+                    "task_id": task_id,
+                    "state": state,
+                    "progress": progress_meta.get("progress", 0),
+                    "step": progress_meta.get("step", ""),
+                }
+                await websocket.send_text(json.dumps(payload))
+
+            except WebSocketDisconnect:
+                break
+            except Exception as exc:
+                log.warning("scan_ws_poll_error", task_id=task_id, error=str(exc))
+
+            await asyncio.sleep(_POLL_INTERVAL_S)
+
+    except WebSocketDisconnect:
+        pass
+    finally:
+        heartbeat_task.cancel()
+        log.info("scan_ws_client_disconnected", task_id=task_id)

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.core.analyzer.risk_engine import RiskScoreResult, calculate_risk_score

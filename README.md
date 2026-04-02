@@ -176,9 +176,68 @@ All settings are controlled via environment variables (see `.env.example`):
 
 ## 🗺️ Roadmap
 
-- [ ] Celery async task queue for long-running scans
-- [ ] WebSocket scan progress streaming
-- [ ] Multi-chain support (BSC, Polygon, Arbitrum)
-- [ ] Graph-based rug-pull network analysis
-- [ ] Fine-tuned LLM vulnerability explanation layer
-- [ ] CI/CD pipeline with audit gate
+- [x] Celery async task queue for long-running scans
+- [x] WebSocket scan progress streaming
+- [x] Multi-chain support (BSC, Polygon, Arbitrum)
+- [ ] Graph-based rug-pull network analysis (Neo4j backend)
+- [x] Fine-tuned LLM vulnerability explanation layer
+- [x] CI/CD pipeline with audit gate
+
+---
+
+## ⚡ Async Scans (Celery)
+
+Submit a scan to the background queue and poll for progress:
+
+```bash
+# Submit
+curl -X POST http://localhost:8000/api/v1/scanner/scan/async \
+  -H 'Content-Type: application/json' \
+  -d '{"source_code": "pragma solidity ^0.8.0; contract Foo {}"}'
+# → {"task_id": "abc123…", "status": "queued", "status_url": "/api/v1/scanner/task/abc123…"}
+
+# Poll
+curl http://localhost:8000/api/v1/scanner/task/abc123…
+# → {"task_id": "abc123…", "state": "PROGRESS", "progress": 10, "step": "running_static_analysis"}
+
+# Or stream progress via WebSocket
+wscat -c ws://localhost:8000/api/v1/realtime/scan/abc123…
+```
+
+Start the Celery worker:
+
+```bash
+celery -A app.worker worker --loglevel=info --concurrency=2
+```
+
+---
+
+## 🌐 Multi-Chain Support
+
+Pass `chain` in the request body to scan contracts on other networks:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/scanner/scan \
+  -H 'Content-Type: application/json' \
+  -d '{"address": "0x…", "chain": "bsc"}'
+```
+
+Supported chains: `ethereum` (default), `bsc`, `polygon`, `arbitrum`.
+
+Configure RPC endpoints and block explorer API keys in `.env` (see `.env.example`).
+
+---
+
+## 🤖 LLM Vulnerability Explanations
+
+Enable AI-generated explanations by setting in `.env`:
+
+```env
+LLM_EXPLANATION_ENABLED=true
+OPENAI_API_KEY=sk-…
+OPENAI_MODEL=gpt-4o-mini   # or gpt-4o
+```
+
+Each vulnerability finding in scan responses will include an `explanation` field
+with a human-readable description of the risk and suggested mitigation.
+A rule-based fallback is used automatically when the LLM is not configured.

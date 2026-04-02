@@ -131,7 +131,7 @@ class VulnerabilityClassifier:
         Each LABELS class is represented by constructing archetypal feature
         vectors based on known check names and severities.
         """
-        from app.core.ai.feature_extractor import _KNOWN_CHECKS, _SEVERITY_MAP
+        from app.core.ai.feature_extractor import _KNOWN_CHECKS
 
         rng = np.random.default_rng(42)
         X_rows, y_rows = [], []

@@ -13,6 +13,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.ai.classifier import VulnerabilityClassifier
+from app.core.ai.explainer import generate_explanation
 from app.core.analyzer.contract_profiler import ContractProfile, profile_contract
 from app.core.analyzer.risk_engine import RiskScoreResult, calculate_risk_score
 from app.core.analyzer.vulnerability_parser import normalise_findings
@@ -20,7 +21,7 @@ from app.core.intelligence.blockchain_client import BlockchainClient
 from app.core.scanner.base_scanner import Finding, ScanResult
 from app.core.scanner.mythril_scanner import MythrilScanner
 from app.core.scanner.slither_scanner import SlitherScanner
-from app.models.contract import Contract, RiskLevel
+from app.models.contract import Contract
 from app.models.vulnerability import Vulnerability
 from app.schemas.contract import ContractProfileOut, ScanResponse, VulnerabilityOut
 
@@ -44,6 +45,7 @@ class ScanService:
         address: Optional[str],
         compiler_version: str = "0.8.19",
         enable_mythril: bool = False,
+        chain: str = "ethereum",
     ) -> ScanResponse:
         """
         Run the full intelligence pipeline:
@@ -61,9 +63,10 @@ class ScanService:
 
         # Step 1 — fetch source from chain
         if not source_code and address:
-            log.info("fetching_source_from_chain", address=address)
-            source_code = await self._blockchain.get_contract_source(address)
-            creator_address = await self._blockchain.get_contract_creator(address)
+            log.info("fetching_source_from_chain", address=address, chain=chain)
+            blockchain = BlockchainClient(chain=chain)
+            source_code = await blockchain.get_contract_source(address)
+            creator_address = await blockchain.get_contract_creator(address)
 
         if not source_code:
             raise ValueError("No source code available — provide source_code or a verified address")
@@ -100,6 +103,23 @@ class ScanService:
             ai_boosts=ai_boosts,
         )
 
+        # Step 6b — LLM explanations (non-blocking; best-effort)
+        explanations: List[str] = []
+        for i, finding in enumerate(findings):
+            ai_cat = classifications[i][0] if classifications and i < len(classifications) else None
+            try:
+                expl = await generate_explanation(
+                    tool=finding.tool,
+                    check=finding.check,
+                    title=finding.title,
+                    description=finding.description,
+                    severity=finding.severity,
+                    ai_category=ai_cat,
+                )
+            except Exception:
+                expl = finding.description or ""
+            explanations.append(expl)
+
         # Step 7 — persist
         contract = await self._persist_contract(
             address=address,
@@ -110,11 +130,14 @@ class ScanService:
             findings=findings,
             classifications=classifications,
             creator_address=creator_address,
+            chain=chain,
+            explanations=explanations,
         )
 
         # Step 8 — build response
         vuln_outs: List[VulnerabilityOut] = []
-        for finding, (ai_cat, ai_conf) in zip(findings, classifications or []):
+        for i, finding in enumerate(findings):
+            ai_cat, ai_conf = classifications[i] if classifications and i < len(classifications) else (None, 0.0)
             vuln_outs.append(
                 VulnerabilityOut(
                     tool=finding.tool,
@@ -127,7 +150,8 @@ class ScanService:
                     line_start=finding.line_start,
                     line_end=finding.line_end,
                     ai_category=ai_cat,
-                    ai_confidence=round(ai_conf, 3),
+                    ai_confidence=round(ai_conf, 3) if ai_conf else None,
+                    explanation=explanations[i] if i < len(explanations) else None,
                 )
             )
 
@@ -162,6 +186,8 @@ class ScanService:
         findings: List[Finding],
         classifications: list,
         creator_address: Optional[str],
+        chain: str = "ethereum",
+        explanations: Optional[List[str]] = None,
     ) -> Contract:
         contract = Contract(
             address=address,
@@ -176,6 +202,7 @@ class ScanService:
             has_mint=profile.has_mint,
             has_ownership=profile.has_ownership,
             creator_address=creator_address,
+            chain=chain,
         )
         self._db.add(contract)
         await self._db.flush()  # get contract.id
@@ -199,6 +226,7 @@ class ScanService:
                 line_end=finding.line_end,
                 ai_category=ai_cat,
                 ai_confidence=ai_conf,
+                explanation=explanations[i] if explanations and i < len(explanations) else None,
             )
             self._db.add(vuln)
 

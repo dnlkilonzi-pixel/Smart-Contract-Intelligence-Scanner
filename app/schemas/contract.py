@@ -23,12 +23,25 @@ class ScanRequest(BaseModel):
     enable_mythril: bool = Field(
         False, description="Also run Mythril (slower but deeper symbolic execution)"
     )
+    chain: str = Field(
+        "ethereum",
+        description="Target blockchain network",
+        json_schema_extra={"example": "ethereum", "enum": ["ethereum", "bsc", "polygon", "arbitrum"]},
+    )
 
     @field_validator("address")
     @classmethod
     def validate_address(cls, v: Optional[str]) -> Optional[str]:
         if v is not None and not v.startswith("0x"):
             raise ValueError("address must start with 0x")
+        return v
+
+    @field_validator("chain")
+    @classmethod
+    def validate_chain(cls, v: str) -> str:
+        allowed = {"ethereum", "bsc", "polygon", "arbitrum"}
+        if v not in allowed:
+            raise ValueError(f"chain must be one of: {sorted(allowed)}")
         return v
 
 
@@ -46,6 +59,7 @@ class VulnerabilityOut(BaseModel):
     line_end: Optional[int] = None
     ai_category: Optional[str] = None
     ai_confidence: Optional[float] = None
+    explanation: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
