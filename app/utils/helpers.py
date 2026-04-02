@@ -1,7 +1,6 @@
 """General helper utilities."""
 from __future__ import annotations
 
-import hashlib
 import re
 from typing import Any
 
@@ -9,15 +8,6 @@ from typing import Any
 def is_valid_eth_address(address: str) -> bool:
     """Return True if *address* looks like a valid Ethereum address."""
     return bool(re.fullmatch(r"0x[0-9a-fA-F]{40}", address))
-
-
-def checksum_address(address: str) -> str:
-    """Return EIP-55 checksum address (pure Python, no Web3 dependency)."""
-    address = address.lower().replace("0x", "")
-    keccak = hashlib.sha3_256(address.encode()).hexdigest()
-    return "0x" + "".join(
-        c.upper() if int(keccak[i], 16) >= 8 else c for i, c in enumerate(address)
-    )
 
 
 def flatten_dict(d: dict, parent_key: str = "", sep: str = ".") -> dict[str, Any]:

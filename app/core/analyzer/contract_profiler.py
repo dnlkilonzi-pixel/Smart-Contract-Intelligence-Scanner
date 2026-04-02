@@ -9,7 +9,8 @@ Analyses Solidity source code to extract capability flags:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
@@ -20,11 +21,7 @@ class ContractProfile:
     has_selfdestruct: bool = False
     has_delegatecall: bool = False
     has_flash_loan: bool = False
-    compiler_pragmas: list[str] = None  # type: ignore[assignment]
-
-    def __post_init__(self) -> None:
-        if self.compiler_pragmas is None:
-            self.compiler_pragmas = []
+    compiler_pragmas: List[str] = field(default_factory=list)
 
 
 # Regex patterns for capability detection
@@ -73,8 +70,8 @@ def profile_contract(source_code: str) -> ContractProfile:
     """
     profile = ContractProfile()
 
-    # Extract pragma versions
-    profile.compiler_pragmas = re.findall(r"pragma\s+solidity\s+([^;]+);", source_code)
+    # Extract pragma versions — use a bounded quantifier to prevent ReDoS
+    profile.compiler_pragmas = re.findall(r"pragma\s+solidity\s+([^;\n]{1,80});", source_code)
 
     # Evaluate each capability flag
     for flag, patterns in _PATTERNS.items():
