@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from functools import lru_cache
 from typing import Dict, List, Optional
 
 import structlog

@@ -17,7 +17,12 @@ WORKDIR /app
 # Install Python dependencies first (layer cache)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir slither-analyzer mythril
+    && pip install --no-cache-dir slither-analyzer
+
+# Mythril is an optional deep-analysis tool.  It depends on numpy==1.19.0 which
+# is incompatible with Python 3.11+ build tooling.  Install it separately so
+# that the main image still works even if mythril installation fails.
+RUN pip install --no-cache-dir mythril || echo "WARNING: mythril installation failed; symbolic execution will be unavailable"
 
 # Copy application source
 COPY . .

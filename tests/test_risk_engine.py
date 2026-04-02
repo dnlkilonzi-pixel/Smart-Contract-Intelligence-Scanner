@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.core.analyzer.risk_engine import RiskScoreResult, calculate_risk_score, _score_to_level
+from app.core.analyzer.risk_engine import calculate_risk_score, _score_to_level
 from app.core.scanner.base_scanner import Finding
 from app.models.contract import RiskLevel
 

@@ -1,9 +1,8 @@
 """Tests for the FastAPI application endpoints (no DB / external services needed)."""
 from __future__ import annotations
 
-import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 from app.main import app
 
@@ -20,7 +19,7 @@ class TestHealthEndpoint:
 class TestScanEndpoint:
     def test_missing_body_returns_422(self):
         """Both source_code and address omitted should return 422."""
-        with patch("app.api.v1.scanner.ScanService") as mock_svc:
+        with patch("app.api.v1.scanner.ScanService"):
             response = client.post(
                 "/api/v1/scanner/scan",
                 json={},

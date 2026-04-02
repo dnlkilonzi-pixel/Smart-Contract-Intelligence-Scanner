@@ -1,7 +1,6 @@
 """Tests for the contract profiler."""
 from __future__ import annotations
 
-import pytest
 
 from app.core.analyzer.contract_profiler import profile_contract
 

@@ -21,7 +21,7 @@ from app.core.intelligence.blockchain_client import BlockchainClient
 from app.core.scanner.base_scanner import Finding, ScanResult
 from app.core.scanner.mythril_scanner import MythrilScanner
 from app.core.scanner.slither_scanner import SlitherScanner
-from app.models.contract import Contract, RiskLevel
+from app.models.contract import Contract
 from app.models.vulnerability import Vulnerability
 from app.schemas.contract import ContractProfileOut, ScanResponse, VulnerabilityOut
 

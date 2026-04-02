@@ -154,8 +154,6 @@ async def scan_progress_ws(websocket: WebSocket, task_id: str) -> None:
 
         from app.worker import celery_app
 
-        terminal_states = {"SUCCESS", "FAILURE", "REVOKED"}
-
         while True:
             try:
                 result: AsyncResult = celery_app.AsyncResult(task_id)
