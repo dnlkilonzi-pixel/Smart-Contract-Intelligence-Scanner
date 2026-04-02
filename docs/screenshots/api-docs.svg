@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680">
+  <!-- Background -->
+  <rect width="1200" height="680" fill="#0f172a"/>
+
+  <!-- Navbar -->
+  <rect width="1200" height="52" fill="#0f172a"/>
+  <rect y="52" width="1200" height="1" fill="#1e293b"/>
+  <circle cx="24" cy="26" r="9" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <path d="M24 18 L30 22 L30 28 Q30 33 24 36 Q18 33 18 28 L18 22 Z" fill="#38bdf8" opacity="0.3"/>
+  <text x="40" y="31" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#f1f5f9">Smart Contract Intelligence Scanner</text>
+
+  <!-- API Docs pane label -->
+  <text x="600" y="100" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#f1f5f9" text-anchor="middle">API Reference</text>
+  <text x="600" y="126" font-family="system-ui,sans-serif" font-size="14" fill="#64748b" text-anchor="middle">Smart Contract Intelligence Scanner — v1.0.0 · OAS 3.1</text>
+
+  <!-- Section: Scanner -->
+  <rect x="60" y="148" width="1080" height="36" rx="8" fill="#0284c720"/>
+  <text x="80" y="172" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#38bdf8">scanner</text>
+
+  <!-- POST /scan -->
+  <rect x="60" y="192" width="1080" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="203" width="56" height="26" rx="6" fill="#10b981"/>
+  <text x="100" y="221" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">POST</text>
+  <text x="148" y="221" font-family="monospace" font-size="13" fill="#f1f5f9">/api/v1/scanner/scan</text>
+  <text x="420" y="221" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Scan a smart contract for vulnerabilities</text>
+  <text x="1120" y="221" font-family="system-ui,sans-serif" font-size="16" fill="#64748b" text-anchor="end">▶</text>
+
+  <!-- POST /scan/report/json -->
+  <rect x="60" y="252" width="1080" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="263" width="56" height="26" rx="6" fill="#10b981"/>
+  <text x="100" y="281" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">POST</text>
+  <text x="148" y="281" font-family="monospace" font-size="13" fill="#f1f5f9">/api/v1/scanner/scan/report/json</text>
+  <text x="480" y="281" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Scan + return structured JSON audit report</text>
+  <text x="1120" y="281" font-family="system-ui,sans-serif" font-size="16" fill="#64748b" text-anchor="end">▶</text>
+
+  <!-- POST /scan/report/html -->
+  <rect x="60" y="312" width="1080" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="323" width="56" height="26" rx="6" fill="#10b981"/>
+  <text x="100" y="341" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">POST</text>
+  <text x="148" y="341" font-family="monospace" font-size="13" fill="#f1f5f9">/api/v1/scanner/scan/report/html</text>
+  <text x="480" y="341" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Scan + return rendered HTML audit report</text>
+  <text x="1120" y="341" font-family="system-ui,sans-serif" font-size="16" fill="#64748b" text-anchor="end">▶</text>
+
+  <!-- Section: risk -->
+  <rect x="60" y="376" width="1080" height="36" rx="8" fill="#f59e0b20"/>
+  <text x="80" y="400" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#fbbf24">risk</text>
+
+  <!-- POST /risk/score -->
+  <rect x="60" y="420" width="1080" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="431" width="56" height="26" rx="6" fill="#10b981"/>
+  <text x="100" y="449" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">POST</text>
+  <text x="148" y="449" font-family="monospace" font-size="13" fill="#f1f5f9">/api/v1/risk/score</text>
+  <text x="360" y="449" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Calculate risk score from a findings list</text>
+  <text x="1120" y="449" font-family="system-ui,sans-serif" font-size="16" fill="#64748b" text-anchor="end">▶</text>
+
+  <!-- Section: wallet -->
+  <rect x="60" y="484" width="1080" height="36" rx="8" fill="#a855f720"/>
+  <text x="80" y="508" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#c084fc">wallet</text>
+
+  <!-- GET /wallet/{address}/intelligence -->
+  <rect x="60" y="528" width="1080" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="539" width="48" height="26" rx="6" fill="#0ea5e9"/>
+  <text x="96" y="557" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">GET</text>
+  <text x="132" y="557" font-family="monospace" font-size="13" fill="#f1f5f9">/api/v1/wallet/{address}/intelligence</text>
+  <text x="510" y="557" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Wallet behaviour analysis + rug-pull scoring</text>
+  <text x="1120" y="557" font-family="system-ui,sans-serif" font-size="16" fill="#64748b" text-anchor="end">▶</text>
+
+  <!-- Section: realtime -->
+  <rect x="60" y="592" width="1080" height="36" rx="8" fill="#ef444420"/>
+  <text x="80" y="616" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#f87171">realtime</text>
+
+  <!-- GET /realtime/feed -->
+  <rect x="60" y="636" width="1080" height="30" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <rect x="72" y="641" width="48" height="20" rx="5" fill="#0ea5e9"/>
+  <text x="96" y="656" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">GET</text>
+  <text x="132" y="656" font-family="monospace" font-size="12" fill="#f1f5f9">/api/v1/realtime/feed</text>
+  <text x="370" y="656" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Live mempool threat stream</text>
+</svg>
