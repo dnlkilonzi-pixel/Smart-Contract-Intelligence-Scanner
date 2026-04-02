@@ -123,12 +123,14 @@ async def scan_contract_async(body: AsyncScanRequest) -> AsyncScanResponse:
                 address=body.address,
                 compiler_version=body.compiler_version or "0.8.19",
                 enable_mythril=body.enable_mythril,
+                chain=body.chain,
             )
         else:
             result = scan_address_task.delay(
                 address=body.address,
                 compiler_version=body.compiler_version or "0.8.19",
                 enable_mythril=body.enable_mythril,
+                chain=body.chain,
             )
     except Exception as exc:
         raise HTTPException(

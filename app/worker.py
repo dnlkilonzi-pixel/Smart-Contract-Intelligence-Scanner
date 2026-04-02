@@ -125,6 +125,7 @@ def scan_contract_task(
     address: Optional[str] = None,
     compiler_version: str = "0.8.19",
     enable_mythril: bool = False,
+    chain: str = "ethereum",
 ) -> Dict[str, Any]:
     """
     Scan a Solidity contract source for vulnerabilities.
@@ -139,6 +140,8 @@ def scan_contract_task(
         Solidity compiler version string.
     enable_mythril:
         Whether to run Mythril in addition to Slither.
+    chain:
+        Target blockchain network (ethereum, bsc, polygon, arbitrum).
 
     Returns
     -------
@@ -163,6 +166,7 @@ def scan_contract_task(
                 address=address,
                 compiler_version=compiler_version,
                 enable_mythril=enable_mythril,
+                chain=chain,
             )
             self.update_state(
                 state="PROGRESS",
@@ -187,9 +191,10 @@ def scan_address_task(
     address: str,
     compiler_version: str = "0.8.19",
     enable_mythril: bool = False,
+    chain: str = "ethereum",
 ) -> Dict[str, Any]:
     """
-    Fetch verified source from Etherscan for *address* and scan it.
+    Fetch verified source from the block explorer for *address* and scan it.
 
     Parameters
     ----------
@@ -199,6 +204,8 @@ def scan_address_task(
         Solidity compiler version to use.
     enable_mythril:
         Whether to also run Mythril.
+    chain:
+        Target blockchain network (ethereum, bsc, polygon, arbitrum).
 
     Returns
     -------
@@ -223,6 +230,7 @@ def scan_address_task(
                 address=address,
                 compiler_version=compiler_version,
                 enable_mythril=enable_mythril,
+                chain=chain,
             )
             self.update_state(
                 state="PROGRESS",

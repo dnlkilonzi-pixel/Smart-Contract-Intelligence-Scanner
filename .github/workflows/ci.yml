@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["main", "develop"]
 
+# Restrict the default GITHUB_TOKEN permissions to read-only
+permissions:
+  contents: read
+
 jobs:
   # ─────────────────────────────────────────────────────────────────
   # Backend: lint, type-check, and test
@@ -13,6 +17,8 @@ jobs:
   backend:
     name: Backend (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -64,6 +70,8 @@ jobs:
   security-audit:
     name: Security audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -95,6 +103,8 @@ jobs:
   frontend:
     name: Frontend (Node.js)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: dashboard
@@ -129,6 +139,8 @@ jobs:
   docker-build:
     name: Docker build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
